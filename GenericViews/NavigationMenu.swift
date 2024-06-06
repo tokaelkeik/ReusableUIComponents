@@ -23,11 +23,9 @@ struct NavigationMenu: View {
     @Binding var selectedIndex: Int
     var menuItems: [MenuItem]
     var isScrollable: Bool
-
     @Environment(\.menuConfiguration) var configuration
-
     var actionHandler: ((Int) -> Void)?
-
+    
     var body: some View {
         HStack {
             if isScrollable {
@@ -37,10 +35,14 @@ struct NavigationMenu: View {
                                  selectedIndex: $selectedIndex,
                                  configuration: configuration)
                     }.onAppear {
-                        value.scrollTo(selectedIndex)
-                       }
+                        withAnimation {
+                            value.scrollTo(selectedIndex, anchor: .center)
+                        }
+                    }
                     .onChange(of: selectedIndex) { index in
-                        value.scrollTo(selectedIndex)
+                        withAnimation {
+                            value.scrollTo(index, anchor: .center)
+                        }
                     }
                 }
             } else {
@@ -60,33 +62,31 @@ struct MenuView: View {
     var configuration: MenuConfiguration
     var actionHandler: ((Int) -> Void)?
     
+    @Namespace var namespace
+    
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
             
             ForEach(Array(menuItems.enumerated()), id: \.offset) { index, menu in
                 Spacer().frame(width: configuration.margin)
                 if configuration.isUnderLined {
-                    UnderlinedMenuItemView(menu: menu,
+                    UnderlinedMenuItemView(selectedIndex: $selectedIndex,
+                                           menu: menu,
                                  isSelected: index == selectedIndex,
                                  configuration: configuration,
                                  action: {
                                      selectedIndex = index
                                      actionHandler?(index)
-                                 })
-                    .if(index == selectedIndex, content: {
-                        $0.matchedGeometryEffect(id: "menuItem", in: menuItemTransition)
-                    })
+                                 }, nameSpace: namespace)
                 } else {
-                    MenuItemView(menu: menu,
+                    MenuItemView(selectedIndex: $selectedIndex,
+                                 menu: menu,
                                  isSelected: index == selectedIndex,
                                  configuration: configuration,
                                  action: {
                                      selectedIndex = index
                                      actionHandler?(index)
-                                 })
-                    .if(index == selectedIndex, content: {
-                        $0.matchedGeometryEffect(id: "menuItem", in: menuItemTransition)
-                    })
+                                 }, nameSpace: namespace)
                 }
             }
             Spacer().frame(width: configuration.margin)
@@ -96,56 +96,73 @@ struct MenuView: View {
             RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
                 .foregroundColor(configuration.menuBackgroundColor)
         )
-        .animation(.easeInOut, value: selectedIndex)
     }
-    
 }
 
 // MARK: - MenuItemView
 struct MenuItemView: View {
+    @Binding var selectedIndex: Int
     var menu: MenuItem
     var isSelected: Bool
     var configuration: MenuConfiguration
     var action: () -> Void
+    let nameSpace: Namespace.ID
 
     var body: some View {
-        HStack(spacing: 0) {
-            if let image = isSelected ? menu.inLineImageSelected : menu.inLineImageUnselected {
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: configuration.imageWidth)
-                    .padding(.trailing, configuration.imagePadding)
+        
+        ZStack {
+            if isSelected {
+                RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
+                    .foregroundColor(configuration.selectedMenuItemBackgroundColor)
+                    .frame(height: configuration.innerViewHeight)
+                    .matchedGeometryEffect(id: "underline",
+                                           in: nameSpace,
+                                           properties: .frame)
+                
+            } else {
+                RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
+                    .foregroundColor(configuration.unselectedMenuItemBackgroundColor)
+                    .frame(height: configuration.innerViewHeight)
             }
-            Text(menu.text)
-                .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
-                .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
+        
+            
+            HStack(spacing: 0) {
+                if let image = isSelected ? menu.inLineImageSelected : menu.inLineImageUnselected {
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: configuration.imageWidth)
+                        .padding(.trailing, configuration.imagePadding)
+                }
+                Text(menu.text)
+                    .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
+                    .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
+            }
+            .padding(.horizontal, configuration.itemPadding)
+            .overlay(
+                RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
+                    .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor, lineWidth: configuration.itemBorderWidth)
+                    .frame(height: configuration.innerViewHeight)
+            )
+            .onTapGesture {
+                action()
+            }
+            .frame(maxWidth: configuration.isMaxWidth ? .infinity : .none)
+            
         }
-        .padding(.horizontal, configuration.itemPadding)
-        .background(
-            RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
-                .foregroundColor(isSelected ? configuration.selectedMenuItemBackgroundColor : configuration.unselectedMenuItemBackgroundColor)
-                .frame(height: configuration.innerViewHeight)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
-                .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor, lineWidth: configuration.itemBorderWidth)
-                .frame(height: configuration.innerViewHeight)
-        )
-        .onTapGesture {
-            action()
-        }
-        .frame(maxWidth: configuration.isMaxWidth ? .infinity : .none)
+        .fixedSize(horizontal: true, vertical: false)
+        .animation(.easeInOut, value: selectedIndex)
     }
 }
 
 // MARK: - UnderlinedMenuItemView
 struct UnderlinedMenuItemView: View {
+    @Binding var selectedIndex: Int
     var menu: MenuItem
     var isSelected: Bool
     var configuration: MenuConfiguration
     var action: () -> Void
-    @Namespace private var menuItemTransition
+    let nameSpace: Namespace.ID
 
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -159,25 +176,24 @@ struct UnderlinedMenuItemView: View {
             Text(menu.text)
                 .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
                 .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
-                .background(
-                    GeometryReader { geometry in
-                        Rectangle()
-                            .foregroundColor(isSelected ? configuration.underlineColor : .clear)
-                            .frame(width: geometry.size.width, height: configuration.underlineHeight)
-                            .offset(y: geometry.size.height)
-                            .padding(.top, configuration.underlineTopPadding)
-                            .matchedGeometryEffect(id: "menuItem",
-                                                   in: menuItemTransition)
-                            .matchedGeometryEffect(id: isSelected ? "underline" : "",
-                                                   in: menuItemTransition,
-                                                   properties: .frame)
-                    },
-                    alignment: .bottomLeading
-                )
+            if isSelected {
+                configuration.underlineColor
+                    .frame(height: configuration.underlineHeight)
+                    .padding(.top, configuration.underlineTopPadding)
+                    .matchedGeometryEffect(id: "underline",
+                                           in: nameSpace,
+                                           properties: .frame)
+            } else {
+                Color.clear
+                    .frame(height: configuration.underlineHeight)
+                    .padding(.top, configuration.underlineTopPadding)
+            }
         }
         .onTapGesture {
             action()
         }
+        .fixedSize(horizontal: true, vertical: false)
+        .animation(.spring, value: selectedIndex)
        
     }
 }

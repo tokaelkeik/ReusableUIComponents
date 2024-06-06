@@ -66,7 +66,7 @@ struct InfinityMenu: View {
                                  MenuItem(text: "Rankings"),
                                  MenuItem(text: "Scores")]
     var body: some View {
-        HStack {
+        HStack(alignment: .bottom) {
             NavigationMenu(selectedIndex: $selectedIndex,
                            menuItems: menuItems,
                            isScrollable: false)
@@ -84,7 +84,7 @@ struct InfinityMenu: View {
             ))
             Spacer()
         }
-        .frame(height: 40)
+        .frame(height: 45)
         .frame(maxWidth: .infinity)
         .background(Color(hex: 0xF4F4F4))
     }
@@ -130,6 +130,18 @@ struct BerberShopMenu: View {
                                           aboveImageUnSelected: Image("Scissors")),
                                  MenuItem(text: "Skin Care",
                                           aboveImageSelected: Image("Skin Care"),
+                                          aboveImageUnSelected: Image("Skin Care")),
+                                 MenuItem(text: "Barber Shops",
+                                          aboveImageSelected: Image("Beauty"),
+                                          aboveImageUnSelected: Image("Beauty")),
+                                 MenuItem(text: "Wellness & Spa",
+                                          aboveImageSelected: Image("Hair Salon"),
+                                          aboveImageUnSelected: Image("Hair Salon")),
+                                 MenuItem(text: "Hair Salon",
+                                          aboveImageSelected: Image("Scissors"),
+                                          aboveImageUnSelected: Image("Scissors")),
+                                 MenuItem(text: "Skin Care",
+                                          aboveImageSelected: Image("Skin Care"),
                                           aboveImageUnSelected: Image("Skin Care"))]
     
     var body: some View {
@@ -150,13 +162,13 @@ struct BerberShopMenu: View {
                 underlineTopPadding: 10,
                 underlineHeight: 3,
                 margin: 30
-            
+                
             ))
             
             Rectangle()
                 .foregroundColor(Color(hex: 0x050A30, alpha: 0.3))
                 .frame(height: 2)
-                .padding(.top, -7)
+                .padding(.top, -13)
         }
         
     }
@@ -177,7 +189,7 @@ struct StarsMenu: View {
                                  MenuItem(text: "4 Stars",
                                           inLineImageSelected: Image("starSelected"),
                                           inLineImageUnselected: Image("starUnSelected")),
-                                ]
+    ]
     var body: some View {
         NavigationMenu(selectedIndex: $selectedIndex,
                        menuItems: menuItems,
