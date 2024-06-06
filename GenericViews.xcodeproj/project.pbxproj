@@ -11,6 +11,8 @@
 		14DAB7FA2C11C1C10043219D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAB7F92C11C1C10043219D /* ContentView.swift */; };
 		14DAB7FC2C11C1C30043219D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14DAB7FB2C11C1C30043219D /* Assets.xcassets */; };
 		14DAB7FF2C11C1C30043219D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14DAB7FE2C11C1C30043219D /* Preview Assets.xcassets */; };
+		14DAB8062C11C1DF0043219D /* NavigationMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAB8052C11C1DF0043219D /* NavigationMenu.swift */; };
+		14DAB8082C11C1F20043219D /* NavigationMenuDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAB8072C11C1F20043219D /* NavigationMenuDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,8 @@
 		14DAB7F92C11C1C10043219D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		14DAB7FB2C11C1C30043219D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		14DAB7FE2C11C1C30043219D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		14DAB8052C11C1DF0043219D /* NavigationMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenu.swift; sourceTree = "<group>"; };
+		14DAB8072C11C1F20043219D /* NavigationMenuDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationMenuDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +59,8 @@
 				14DAB7F92C11C1C10043219D /* ContentView.swift */,
 				14DAB7FB2C11C1C30043219D /* Assets.xcassets */,
 				14DAB7FD2C11C1C30043219D /* Preview Content */,
+				14DAB8052C11C1DF0043219D /* NavigationMenu.swift */,
+				14DAB8072C11C1F20043219D /* NavigationMenuDemo.swift */,
 			);
 			path = GenericViews;
 			sourceTree = "<group>";
@@ -138,6 +144,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				14DAB7FA2C11C1C10043219D /* ContentView.swift in Sources */,
+				14DAB8082C11C1F20043219D /* NavigationMenuDemo.swift in Sources */,
+				14DAB8062C11C1DF0043219D /* NavigationMenu.swift in Sources */,
 				14DAB7F82C11C1C10043219D /* GenericViewsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
