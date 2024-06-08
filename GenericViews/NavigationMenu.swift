@@ -111,51 +111,6 @@ struct MenuView<Item: MenuItemProtocol>: View {
     }
 }
 
-// MARK: - MenuItemContentView
-struct MenuItemContentView<Item: MenuItemProtocol>: View {
-    var menu: Item
-    var isSelected: Bool
-    var configuration: any MenuConfiguration // Use a generic configuration
-    
-    var body: some View {
-        Group {
-            if configuration.imagePosition == .inline {
-                HStack(spacing: 0) {
-                    menuImage()
-                    menuText()
-                }
-                .padding(.horizontal, configuration.itemPadding)
-            } else if configuration.imagePosition == .above {
-                VStack(spacing: 0) {
-                    menuImage()
-                    menuText()
-                }
-                .padding(.horizontal, configuration.itemPadding)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func menuImage() -> some View {
-        if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
-            image
-                .resizable()
-                .scaledToFit()
-                .frame(width: configuration.imageWidth)
-                .padding(.trailing, configuration.imagePosition == .inline ?
-                         configuration.imagePadding : 0)
-                .padding(.bottom, configuration.imagePosition == .above ? configuration.imagePadding : 0)
-                .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
-        }
-    }
-    
-    private func menuText() -> some View {
-        Text(menu.text)
-            .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
-            .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
-    }
-}
-
 // MARK: - UnderlinedMenuItemView
 struct UnderlinedMenuItemView<Item: MenuItemProtocol>: View {
     @Binding var selectedIndex: Int
@@ -235,6 +190,52 @@ struct ChipMenuItemView<Item: MenuItemProtocol>: View {
     }
 }
 
+
+// MARK: - MenuItemContentView
+struct MenuItemContentView<Item: MenuItemProtocol>: View {
+    var menu: Item
+    var isSelected: Bool
+    var configuration: any MenuConfiguration // Use a generic configuration
+    
+    var body: some View {
+        Group {
+            if configuration.imagePosition == .inline {
+                HStack(spacing: 0) {
+                    menuImage()
+                    menuText()
+                }
+                .padding(.horizontal, configuration.itemPadding)
+            } else if configuration.imagePosition == .above {
+                VStack(spacing: 0) {
+                    menuImage()
+                    menuText()
+                }
+                .padding(.horizontal, configuration.itemPadding)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func menuImage() -> some View {
+        if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(width: configuration.imageWidth)
+                .padding(.trailing, configuration.imagePosition == .inline ?
+                         configuration.imagePadding : 0)
+                .padding(.bottom, configuration.imagePosition == .above ? configuration.imagePadding : 0)
+                .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
+        }
+    }
+    
+    private func menuText() -> some View {
+        Text(menu.text)
+            .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
+            .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
+    }
+}
+
 // MARK: - Preview
 struct NavigationMenu_Previews: PreviewProvider {
     static var previews: some View {
@@ -254,13 +255,13 @@ struct NavigationMenu_Previews: PreviewProvider {
     }
 }
 
-// MARK: - MenuConfiguration
 // MARK: - ImagePosition Enum
 enum ImagePosition {
     case above
     case inline
 }
 
+// MARK: - MenuConfiguration
 protocol MenuConfiguration {
     var outerViewHeight: CGFloat { get }
     var itemPadding: CGFloat { get }
