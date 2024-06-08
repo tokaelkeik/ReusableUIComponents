@@ -41,7 +41,7 @@ struct PanceMenu: View {
         NavigationMenu(selectedIndex: $selectedIndex,
                        menuItems: menuItems,
                        isScrollable: true)
-        .menuConfiguration(MenuConfiguration(
+        .menuConfiguration(ChipMenuConfiguration(
             innerViewHeight: 46,
             itemPadding: 12,
             selectedMenuItemBackgroundColor: .white,
@@ -70,12 +70,11 @@ struct InfinityMenu: View {
             NavigationMenu(selectedIndex: $selectedIndex,
                            menuItems: menuItems,
                            isScrollable: false)
-            .menuConfiguration(MenuConfiguration(
+            .menuConfiguration(UnderlineMenuConfiguration(
                 menuSelectedItemTextColor: Color(hex: 0x000000),
                 unselectedTextColor: Color(hex: 0x989898),
                 selectedFont: .system(size: 12, weight: .bold),
                 unselectedFont: .system(size: 12, weight: .regular),
-                isUnderLined: true,
                 underlineColor: .black,
                 underlineTopPadding: 10,
                 underlineHeight: 3,
@@ -101,7 +100,7 @@ struct FanzwordMenu: View {
         NavigationMenu(selectedIndex: $selectedIndex,
                        menuItems: menuItems,
                        isScrollable: false)
-        .menuConfiguration(MenuConfiguration(
+        .menuConfiguration(ChipMenuConfiguration(
             outerViewHeight: 50,
             innerViewHeight: 38,
             itemPadding: 12,
@@ -120,29 +119,29 @@ struct FanzwordMenu: View {
 struct BerberShopMenu: View {
     @State var selectedIndex: Int = 0
     var menuItems: [MenuItem] = [MenuItem(text: "Barber Shops",
-                                          aboveImageSelected: Image("Beauty"),
-                                          aboveImageUnSelected: Image("Beauty")),
+                                          imageSelected: Image("Beauty"),
+                                          imageUnselected: Image("Beauty")),
                                  MenuItem(text: "Wellness & Spa",
-                                          aboveImageSelected: Image("Hair Salon"),
-                                          aboveImageUnSelected: Image("Hair Salon")),
+                                          imageSelected: Image("Hair Salon"),
+                                          imageUnselected: Image("Hair Salon")),
                                  MenuItem(text: "Hair Salon",
-                                          aboveImageSelected: Image("Scissors"),
-                                          aboveImageUnSelected: Image("Scissors")),
+                                          imageSelected: Image("Scissors"),
+                                          imageUnselected: Image("Scissors")),
                                  MenuItem(text: "Skin Care",
-                                          aboveImageSelected: Image("Skin Care"),
-                                          aboveImageUnSelected: Image("Skin Care")),
+                                          imageSelected: Image("Skin Care"),
+                                          imageUnselected: Image("Skin Care")),
                                  MenuItem(text: "Barber Shops",
-                                          aboveImageSelected: Image("Beauty"),
-                                          aboveImageUnSelected: Image("Beauty")),
+                                          imageSelected: Image("Beauty"),
+                                          imageUnselected: Image("Beauty")),
                                  MenuItem(text: "Wellness & Spa",
-                                          aboveImageSelected: Image("Hair Salon"),
-                                          aboveImageUnSelected: Image("Hair Salon")),
+                                          imageSelected: Image("Hair Salon"),
+                                          imageUnselected: Image("Hair Salon")),
                                  MenuItem(text: "Hair Salon",
-                                          aboveImageSelected: Image("Scissors"),
-                                          aboveImageUnSelected: Image("Scissors")),
+                                          imageSelected: Image("Scissors"),
+                                          imageUnselected: Image("Scissors")),
                                  MenuItem(text: "Skin Care",
-                                          aboveImageSelected: Image("Skin Care"),
-                                          aboveImageUnSelected: Image("Skin Care"))]
+                                          imageSelected: Image("Skin Care"),
+                                          imageUnselected: Image("Skin Care"))]
     
     var body: some View {
         
@@ -150,18 +149,17 @@ struct BerberShopMenu: View {
             NavigationMenu(selectedIndex: $selectedIndex,
                            menuItems: menuItems,
                            isScrollable: true)
-            .menuConfiguration(MenuConfiguration(
+            .menuConfiguration(UnderlineMenuConfiguration(
                 outerViewHeight: 90,
-                innerViewHeight: 90,
                 menuSelectedItemTextColor: Color(hex: 0x050A30),
                 unselectedTextColor: Color(hex: 0x050A30, alpha: 0.5),
                 selectedFont: .system(size: 12, weight: .bold),
                 unselectedFont: .system(size: 12, weight: .regular),
-                isUnderLined: true,
                 underlineColor: Color(hex: 0x050A30),
                 underlineTopPadding: 10,
                 underlineHeight: 3,
-                margin: 30
+                margin: 30,
+                imagePosition: .inline
                 
             ))
             
@@ -178,23 +176,23 @@ struct BerberShopMenu: View {
 struct StarsMenu: View {
     @State var selectedIndex: Int = 0
     var menuItems: [MenuItem] = [MenuItem(text: "1 Star",
-                                          inLineImageSelected: Image("starSelected"),
-                                          inLineImageUnselected: Image("starUnSelected")),
+                                          imageSelected: Image("starSelected"),
+                                          imageUnselected: Image("starUnSelected")),
                                  MenuItem(text: "2 Stars",
-                                          inLineImageSelected: Image("starSelected"),
-                                          inLineImageUnselected: Image("starUnSelected")),
+                                          imageSelected: Image("starSelected"),
+                                          imageUnselected: Image("starUnSelected")),
                                  MenuItem(text: "3 Stars",
-                                          inLineImageSelected: Image("starSelected"),
-                                          inLineImageUnselected: Image("starUnSelected")),
+                                          imageSelected: Image("starSelected"),
+                                          imageUnselected: Image("starUnSelected")),
                                  MenuItem(text: "4 Stars",
-                                          inLineImageSelected: Image("starSelected"),
-                                          inLineImageUnselected: Image("starUnSelected")),
+                                          imageSelected: Image("starSelected"),
+                                          imageUnselected: Image("starUnSelected")),
     ]
     var body: some View {
         NavigationMenu(selectedIndex: $selectedIndex,
                        menuItems: menuItems,
                        isScrollable: true)
-        .menuConfiguration(MenuConfiguration(
+        .menuConfiguration(ChipMenuConfiguration(
             innerViewHeight: 30,
             itemPadding: 6,
             selectedMenuItemBackgroundColor: Color(hex: 0x050A30),

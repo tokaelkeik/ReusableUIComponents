@@ -7,23 +7,34 @@
 
 import SwiftUI
 
-import SwiftUI
+// MARK: - MenuItemProtocol
+protocol MenuItemProtocol {
+    var text: String { get }
+    var selectedImage: Image? { get }
+    var unselectedImage: Image? { get }
+}
 
-struct MenuItem {
+// MARK: - MenuItem
+struct MenuItem: MenuItemProtocol {
     var text: String
-    var aboveImageSelected: Image?
-    var aboveImageUnSelected: Image?
-    var inLineImageSelected: Image?
-    var inLineImageUnselected: Image?
+    var imageSelected: Image?
+    var imageUnselected: Image?
+
+    var selectedImage: Image? {
+        return imageSelected
+    }
+    
+    var unselectedImage: Image? {
+        return imageUnselected
+    }
 }
 
 // MARK: - NavigationMenu
-struct NavigationMenu: View {
-    
+struct NavigationMenu<Item: MenuItemProtocol>: View {
     @Binding var selectedIndex: Int
-    var menuItems: [MenuItem]
+    var menuItems: [Item]
     var isScrollable: Bool
-    @Environment(\.menuConfiguration) var configuration
+    @Environment(\.menuConfiguration) var configuration: MenuConfiguration
     var actionHandler: ((Int) -> Void)?
     
     var body: some View {
@@ -34,7 +45,8 @@ struct NavigationMenu: View {
                         MenuView(menuItems: menuItems,
                                  selectedIndex: $selectedIndex,
                                  configuration: configuration)
-                    }.onAppear {
+                    }
+                    .onAppear {
                         withAnimation {
                             value.scrollTo(selectedIndex, anchor: .center)
                         }
@@ -55,9 +67,9 @@ struct NavigationMenu: View {
 }
 
 // MARK: - MenuView
-struct MenuView: View {
+struct MenuView<Item: MenuItemProtocol>: View {
     @Namespace private var menuItemTransition
-    var menuItems: [MenuItem]
+    var menuItems: [Item]
     @Binding var selectedIndex: Int
     var configuration: MenuConfiguration
     var actionHandler: ((Int) -> Void)?
@@ -66,50 +78,92 @@ struct MenuView: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            
             ForEach(Array(menuItems.enumerated()), id: \.offset) { index, menu in
                 Spacer().frame(width: configuration.margin)
-                if configuration.isUnderLined {
+                if let config = configuration as? UnderlineMenuConfiguration {
                     UnderlinedMenuItemView(selectedIndex: $selectedIndex,
                                            menu: menu,
-                                 isSelected: index == selectedIndex,
-                                 configuration: configuration,
-                                 action: {
-                                     selectedIndex = index
-                                     actionHandler?(index)
-                                 }, nameSpace: namespace)
-                } else {
+                                           isSelected: index == selectedIndex,
+                                           configuration: config,
+                                           action: {
+                        selectedIndex = index
+                        actionHandler?(index)
+                    }, nameSpace: namespace)
+                } else if let config = configuration as? ChipMenuConfiguration {
                     MenuItemView(selectedIndex: $selectedIndex,
                                  menu: menu,
                                  isSelected: index == selectedIndex,
-                                 configuration: configuration,
+                                 configuration: config,
                                  action: {
-                                     selectedIndex = index
-                                     actionHandler?(index)
-                                 }, nameSpace: namespace)
+                        selectedIndex = index
+                        actionHandler?(index)
+                    }, nameSpace: namespace)
                 }
             }
             Spacer().frame(width: configuration.margin)
         }
         .frame(height: configuration.outerViewHeight)
         .background(
-            RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
+            RoundedRectangle(cornerRadius: configuration is ChipMenuConfiguration ? (configuration as! ChipMenuConfiguration).itemCornerRadius : 0)
                 .foregroundColor(configuration.menuBackgroundColor)
         )
     }
 }
 
-// MARK: - MenuItemView
-struct MenuItemView: View {
-    @Binding var selectedIndex: Int
-    var menu: MenuItem
+// MARK: - MenuItemContentView
+struct MenuItemContentView<Item: MenuItemProtocol>: View {
+    var menu: Item
     var isSelected: Bool
-    var configuration: MenuConfiguration
+    var configuration: ChipMenuConfiguration
+    
+    var body: some View {
+        Group {
+            if configuration.imagePosition == .inline {
+                HStack(spacing: 0) {
+                    menuImage()
+                    menuText()
+                }
+                .padding(.horizontal, configuration.itemPadding)
+            } else if configuration.imagePosition == .above {
+                VStack(spacing: 0) {
+                    menuImage()
+                    menuText()
+                }
+                .padding(.horizontal, configuration.itemPadding)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func menuImage() -> some View {
+        if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(width: configuration.imageWidth)
+                .padding(.trailing, configuration.imagePosition == .inline ? configuration.imagePadding : 0)
+                .padding(.bottom, configuration.imagePosition == .above ? configuration.imagePadding : 0)
+                .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
+        }
+    }
+    
+    private func menuText() -> some View {
+        Text(menu.text)
+            .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
+            .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
+    }
+}
+
+// MARK: - MenuItemView
+struct MenuItemView<Item: MenuItemProtocol>: View {
+    @Binding var selectedIndex: Int
+    var menu: Item
+    var isSelected: Bool
+    var configuration: ChipMenuConfiguration
     var action: () -> Void
     let nameSpace: Namespace.ID
-
+    
     var body: some View {
-        
         ZStack {
             if isSelected {
                 RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
@@ -124,31 +178,17 @@ struct MenuItemView: View {
                     .foregroundColor(configuration.unselectedMenuItemBackgroundColor)
                     .frame(height: configuration.innerViewHeight)
             }
-        
             
-            HStack(spacing: 0) {
-                if let image = isSelected ? menu.inLineImageSelected : menu.inLineImageUnselected {
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: configuration.imageWidth)
-                        .padding(.trailing, configuration.imagePadding)
+            MenuItemContentView(menu: menu, isSelected: isSelected, configuration: configuration)
+                .overlay(
+                    RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
+                        .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor, lineWidth: configuration.itemBorderWidth)
+                        .frame(height: configuration.innerViewHeight)
+                )
+                .onTapGesture {
+                    action()
                 }
-                Text(menu.text)
-                    .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
-                    .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
-            }
-            .padding(.horizontal, configuration.itemPadding)
-            .overlay(
-                RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
-                    .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor, lineWidth: configuration.itemBorderWidth)
-                    .frame(height: configuration.innerViewHeight)
-            )
-            .onTapGesture {
-                action()
-            }
-            .frame(maxWidth: configuration.isMaxWidth ? .infinity : .none)
-            
+                .frame(maxWidth: configuration.isMaxWidth ? .infinity : .none)
         }
         .fixedSize(horizontal: true, vertical: false)
         .animation(.easeInOut, value: selectedIndex)
@@ -156,26 +196,42 @@ struct MenuItemView: View {
 }
 
 // MARK: - UnderlinedMenuItemView
-struct UnderlinedMenuItemView: View {
+struct UnderlinedMenuItemView<Item: MenuItemProtocol>: View {
     @Binding var selectedIndex: Int
-    var menu: MenuItem
+    var menu: Item
     var isSelected: Bool
-    var configuration: MenuConfiguration
+    var configuration: UnderlineMenuConfiguration
     var action: () -> Void
     let nameSpace: Namespace.ID
-
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
-            if let aboveImage = isSelected ? menu.aboveImageSelected : menu.aboveImageUnSelected {
-                aboveImage
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: configuration.imageWidth)
-                    .padding(.bottom, configuration.imagePadding)
+            if configuration.imagePosition == .above {
+                if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: configuration.imageWidth)
+                        .padding(.bottom, configuration.imagePadding)
+                        .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
+                }
+                Text(menu.text)
+                    .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
+                    .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
+            } else if configuration.imagePosition == .inline {
+                HStack(spacing: configuration.imagePadding) {
+                    if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: configuration.imageWidth)
+                            .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
+                    }
+                    Text(menu.text)
+                        .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
+                        .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
+                }
             }
-            Text(menu.text)
-                .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
-                .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
             if isSelected {
                 configuration.underlineColor
                     .frame(height: configuration.underlineHeight)
@@ -194,10 +250,8 @@ struct UnderlinedMenuItemView: View {
         }
         .fixedSize(horizontal: true, vertical: false)
         .animation(.spring, value: selectedIndex)
-       
     }
 }
-
 
 // MARK: - Preview
 struct NavigationMenu_Previews: PreviewProvider {
@@ -206,17 +260,61 @@ struct NavigationMenu_Previews: PreviewProvider {
             NavigationMenu(selectedIndex: .constant(2),
                            menuItems: [
                             MenuItem(text: "Item 1",
-                                     aboveImageSelected: Image(systemName: "star.fill"),
-                                     aboveImageUnSelected: Image(systemName: "star")),
+                                     imageSelected: Image(systemName: "star.fill"),
+                                     imageUnselected: Image(systemName: "star")),
                             MenuItem(text: "Item 2"),
-                            MenuItem(text: "Item 3", inLineImageSelected: Image(systemName: "checkmark"), inLineImageUnselected: Image(systemName: "xmark"))
+                            MenuItem(text: "Item 3",
+                                     imageSelected: Image(systemName: "checkmark"),
+                                     imageUnselected: Image(systemName: "xmark"))
                            ], isScrollable: false)
+                .menuConfiguration(UnderlineMenuConfiguration())
         }.frame(maxWidth: .infinity)
     }
 }
 
-// MARK: - Environment
-struct MenuConfiguration {
+// MARK: - MenuConfiguration
+// MARK: - ImagePosition Enum
+enum ImagePosition {
+    case above
+    case inline
+}
+
+protocol MenuConfiguration {
+    var outerViewHeight: CGFloat { get }
+    var itemPadding: CGFloat { get }
+    var menuBackgroundColor: Color { get }
+    var menuSelectedItemTextColor: Color { get }
+    var unselectedTextColor: Color { get }
+    var selectedFont: Font { get }
+    var unselectedFont: Font { get }
+    var imageWidth: CGFloat { get }
+    var imagePadding: CGFloat { get }
+    var margin: CGFloat { get }
+    var unSelectedImageOpacity: CGFloat { get }
+    var imagePosition: ImagePosition{ get }
+}
+
+// MARK: - UnderlineMenuConfiguration
+struct UnderlineMenuConfiguration: MenuConfiguration {
+    var outerViewHeight: CGFloat = 48
+    var itemPadding: CGFloat = 12
+    var menuBackgroundColor: Color = .clear
+    var menuSelectedItemTextColor: Color = .black
+    var unselectedTextColor: Color = .blue
+    var selectedFont: Font = .system(size: 16, weight: .bold)
+    var unselectedFont: Font = .system(size: 16, weight: .regular)
+    var underlineColor: Color = .black
+    var underlineTopPadding: CGFloat = 20
+    var underlineHeight: CGFloat = 3
+    var imageWidth: CGFloat = 30
+    var imagePadding: CGFloat = 10
+    var margin: CGFloat = 5
+    var unSelectedImageOpacity: CGFloat = 0.5
+    var imagePosition: ImagePosition = .above
+}
+
+// MARK: - ChipMenuConfiguration
+struct ChipMenuConfiguration: MenuConfiguration {
     var outerViewHeight: CGFloat = 48
     var innerViewHeight: CGFloat = 40
     var itemPadding: CGFloat = 12
@@ -232,45 +330,18 @@ struct MenuConfiguration {
     var isMaxWidth: Bool = false
     var selectedFont: Font = .system(size: 16, weight: .bold)
     var unselectedFont: Font = .system(size: 16, weight: .regular)
-    var isUnderLined: Bool = false
-    var underlineColor: Color = .black
-    var underlineTopPadding: CGFloat = 20
-    var underlineHeight: CGFloat = 3
     var imageWidth: CGFloat = 30
     var imagePadding: CGFloat = 10
     var margin: CGFloat = 5
+    var unSelectedImageOpacity: CGFloat = 0.5
+    var imagePosition: ImagePosition = .inline
 }
 
 // MARK: - Environment Keys
 private struct MenuConfigurationKey: EnvironmentKey {
-    
-    static let defaultValue = MenuConfiguration(
-        outerViewHeight: 48,
-        innerViewHeight: 40,
-        itemPadding: 12,
-        menuBackgroundColor: .clear,
-        selectedMenuItemBackgroundColor: .clear,
-        unselectedMenuItemBackgroundColor: .clear,
-        menuSelectedItemTextColor: .black,
-        unselectedTextColor: .blue,
-        itemBorderWidth: 1,
-        itemCornerRadius: 5,
-        selectedBorderColor: .clear,
-        unselectedBorderColor: .clear,
-        isMaxWidth: false,
-        selectedFont: .body,
-        unselectedFont: .caption,
-        isUnderLined: false,
-        underlineColor: .black,
-        underlineTopPadding: 20,
-        underlineHeight: 3,
-        imageWidth: 30,
-        imagePadding: 10,
-        margin: 5
-    )
+    static let defaultValue: MenuConfiguration = ChipMenuConfiguration() // Default configuration
 }
 
-// MARK: - Environment Keys
 extension EnvironmentValues {
     var menuConfiguration: MenuConfiguration {
         get { self[MenuConfigurationKey.self] }
