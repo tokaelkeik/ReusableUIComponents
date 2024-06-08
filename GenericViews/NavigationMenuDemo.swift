@@ -158,8 +158,8 @@ struct BerberShopMenu: View {
                 underlineColor: Color(hex: 0x050A30),
                 underlineTopPadding: 10,
                 underlineHeight: 3,
-                margin: 30,
-                imagePosition: .inline
+                margin: 10,
+                imagePosition: .above
                 
             ))
             

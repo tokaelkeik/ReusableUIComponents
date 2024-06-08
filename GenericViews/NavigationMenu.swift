@@ -67,6 +67,7 @@ struct NavigationMenu<Item: MenuItemProtocol>: View {
 }
 
 // MARK: - MenuView
+
 struct MenuView<Item: MenuItemProtocol>: View {
     @Namespace private var menuItemTransition
     var menuItems: [Item]
@@ -90,11 +91,11 @@ struct MenuView<Item: MenuItemProtocol>: View {
                         actionHandler?(index)
                     }, nameSpace: namespace)
                 } else if let config = configuration as? ChipMenuConfiguration {
-                    MenuItemView(selectedIndex: $selectedIndex,
-                                 menu: menu,
-                                 isSelected: index == selectedIndex,
-                                 configuration: config,
-                                 action: {
+                    ChipMenuItemView(selectedIndex: $selectedIndex,
+                                     menu: menu,
+                                     isSelected: index == selectedIndex,
+                                     configuration: config,
+                                     action: {
                         selectedIndex = index
                         actionHandler?(index)
                     }, nameSpace: namespace)
@@ -114,7 +115,7 @@ struct MenuView<Item: MenuItemProtocol>: View {
 struct MenuItemContentView<Item: MenuItemProtocol>: View {
     var menu: Item
     var isSelected: Bool
-    var configuration: ChipMenuConfiguration
+    var configuration: any MenuConfiguration // Use a generic configuration
     
     var body: some View {
         Group {
@@ -141,7 +142,8 @@ struct MenuItemContentView<Item: MenuItemProtocol>: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: configuration.imageWidth)
-                .padding(.trailing, configuration.imagePosition == .inline ? configuration.imagePadding : 0)
+                .padding(.trailing, configuration.imagePosition == .inline ?
+                         configuration.imagePadding : 0)
                 .padding(.bottom, configuration.imagePosition == .above ? configuration.imagePadding : 0)
                 .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
         }
@@ -154,8 +156,43 @@ struct MenuItemContentView<Item: MenuItemProtocol>: View {
     }
 }
 
-// MARK: - MenuItemView
-struct MenuItemView<Item: MenuItemProtocol>: View {
+// MARK: - UnderlinedMenuItemView
+struct UnderlinedMenuItemView<Item: MenuItemProtocol>: View {
+    @Binding var selectedIndex: Int
+    var menu: Item
+    var isSelected: Bool
+    var configuration: UnderlineMenuConfiguration
+    var action: () -> Void
+    let nameSpace: Namespace.ID
+    
+    var body: some View {
+        VStack(alignment: .center, spacing: 0) {
+            MenuItemContentView(menu: menu, isSelected: isSelected,
+                                configuration: configuration)
+            
+            if isSelected {
+                configuration.underlineColor
+                    .frame(height: configuration.underlineHeight)
+                    .padding(.top, configuration.underlineTopPadding)
+                    .matchedGeometryEffect(id: "underline",
+                                           in: nameSpace,
+                                           properties: .frame)
+            } else {
+                Color.clear
+                    .frame(height: configuration.underlineHeight)
+                    .padding(.top, configuration.underlineTopPadding)
+            }
+        }
+        .onTapGesture {
+            action()
+        }
+        .fixedSize(horizontal: true, vertical: false)
+        .animation(.spring, value: selectedIndex)
+    }
+}
+
+// MARK: - ChipMenuItemView
+struct ChipMenuItemView<Item: MenuItemProtocol>: View {
     @Binding var selectedIndex: Int
     var menu: Item
     var isSelected: Bool
@@ -179,10 +216,13 @@ struct MenuItemView<Item: MenuItemProtocol>: View {
                     .frame(height: configuration.innerViewHeight)
             }
             
-            MenuItemContentView(menu: menu, isSelected: isSelected, configuration: configuration)
+            MenuItemContentView(menu: menu,
+                                isSelected: isSelected,
+                                configuration: configuration)
                 .overlay(
                     RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
-                        .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor, lineWidth: configuration.itemBorderWidth)
+                        .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor,
+                                lineWidth: configuration.itemBorderWidth)
                         .frame(height: configuration.innerViewHeight)
                 )
                 .onTapGesture {
@@ -192,64 +232,6 @@ struct MenuItemView<Item: MenuItemProtocol>: View {
         }
         .fixedSize(horizontal: true, vertical: false)
         .animation(.easeInOut, value: selectedIndex)
-    }
-}
-
-// MARK: - UnderlinedMenuItemView
-struct UnderlinedMenuItemView<Item: MenuItemProtocol>: View {
-    @Binding var selectedIndex: Int
-    var menu: Item
-    var isSelected: Bool
-    var configuration: UnderlineMenuConfiguration
-    var action: () -> Void
-    let nameSpace: Namespace.ID
-    
-    var body: some View {
-        VStack(alignment: .center, spacing: 0) {
-            if configuration.imagePosition == .above {
-                if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: configuration.imageWidth)
-                        .padding(.bottom, configuration.imagePadding)
-                        .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
-                }
-                Text(menu.text)
-                    .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
-                    .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
-            } else if configuration.imagePosition == .inline {
-                HStack(spacing: configuration.imagePadding) {
-                    if let image = isSelected ? menu.selectedImage : menu.unselectedImage {
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: configuration.imageWidth)
-                            .opacity(isSelected ? 1 : configuration.unSelectedImageOpacity)
-                    }
-                    Text(menu.text)
-                        .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
-                        .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
-                }
-            }
-            if isSelected {
-                configuration.underlineColor
-                    .frame(height: configuration.underlineHeight)
-                    .padding(.top, configuration.underlineTopPadding)
-                    .matchedGeometryEffect(id: "underline",
-                                           in: nameSpace,
-                                           properties: .frame)
-            } else {
-                Color.clear
-                    .frame(height: configuration.underlineHeight)
-                    .padding(.top, configuration.underlineTopPadding)
-            }
-        }
-        .onTapGesture {
-            action()
-        }
-        .fixedSize(horizontal: true, vertical: false)
-        .animation(.spring, value: selectedIndex)
     }
 }
 
