@@ -92,7 +92,7 @@ The navigation menu is highly customizable. You just need to provide the `.menuC
 | `imagePosition`          | `ImagePosition = .above`                    |
 | `takeEntireAvailableSpace` | `Bool = false`                           |
 
-By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space. The default value is `false`.
+By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space and it will be divided equally to all menu items . The default value is `false`.
 
 ### ChipMenuConfiguration
 
@@ -120,7 +120,7 @@ By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch 
 | `margin`                        | `CGFloat = 5`                               |
 | `takeEntireAvailableSpace`      | `Bool = false`                              |
 
-By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space. The default value is `false`.
+By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space and it will be divided equally to all menu items . The default value is `false`.By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space. The default value is `false`.
 
 ## Examples
 
