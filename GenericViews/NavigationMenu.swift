@@ -17,16 +17,8 @@ protocol MenuItemProtocol {
 // MARK: - MenuItem
 struct MenuItem: MenuItemProtocol {
     var text: String
-    var imageSelected: Image?
-    var imageUnselected: Image?
-
-    var selectedImage: Image? {
-        return imageSelected
-    }
-    
-    var unselectedImage: Image? {
-        return imageUnselected
-    }
+    var selectedImage: Image?
+    var unselectedImage: Image?
 }
 
 // MARK: - NavigationMenu
@@ -103,9 +95,9 @@ struct MenuView<Item: MenuItemProtocol>: View {
             }
             Spacer().frame(width: configuration.margin)
         }
-        .frame(height: configuration.outerViewHeight)
+        .frame(height: configuration.viewHeight)
         .background(
-            RoundedRectangle(cornerRadius: configuration is ChipMenuConfiguration ? (configuration as! ChipMenuConfiguration).itemCornerRadius : 0)
+            RoundedRectangle(cornerRadius: configuration is ChipMenuConfiguration ? (configuration as! ChipMenuConfiguration).cornerRadius : 0)
                 .foregroundColor(configuration.menuBackgroundColor)
         )
     }
@@ -141,7 +133,8 @@ struct UnderlinedMenuItemView<Item: MenuItemProtocol>: View {
         .onTapGesture {
             action()
         }
-        .fixedSize(horizontal: true, vertical: false)
+        .fixedSize(horizontal: !(configuration.takeEntireAvailableSpace),
+                   vertical: false)
         .animation(.spring, value: selectedIndex)
     }
 }
@@ -158,16 +151,16 @@ struct ChipMenuItemView<Item: MenuItemProtocol>: View {
     var body: some View {
         ZStack {
             if isSelected {
-                RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
-                    .foregroundColor(configuration.selectedMenuItemBackgroundColor)
+                RoundedRectangle(cornerRadius: configuration.cornerRadius)
+                    .foregroundColor(configuration.selectedItemBackgroundColor)
                     .frame(height: configuration.innerViewHeight)
                     .matchedGeometryEffect(id: "underline",
                                            in: nameSpace,
                                            properties: .frame)
                 
             } else {
-                RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
-                    .foregroundColor(configuration.unselectedMenuItemBackgroundColor)
+                RoundedRectangle(cornerRadius: configuration.cornerRadius)
+                    .foregroundColor(configuration.unselectedItemBackgroundColor)
                     .frame(height: configuration.innerViewHeight)
             }
             
@@ -175,17 +168,17 @@ struct ChipMenuItemView<Item: MenuItemProtocol>: View {
                                 isSelected: isSelected,
                                 configuration: configuration)
                 .overlay(
-                    RoundedRectangle(cornerRadius: configuration.itemCornerRadius)
+                    RoundedRectangle(cornerRadius: configuration.cornerRadius)
                         .stroke(isSelected ? configuration.selectedBorderColor : configuration.unselectedBorderColor,
-                                lineWidth: configuration.itemBorderWidth)
+                                lineWidth: configuration.borderWidth)
                         .frame(height: configuration.innerViewHeight)
                 )
                 .onTapGesture {
                     action()
                 }
-                .frame(maxWidth: configuration.isMaxWidth ? .infinity : .none)
         }
-        .fixedSize(horizontal: true, vertical: false)
+        .fixedSize(horizontal: !(configuration.takeEntireAvailableSpace),
+                   vertical: false)
         .animation(.easeInOut, value: selectedIndex)
     }
 }
@@ -231,7 +224,7 @@ struct MenuItemContentView<Item: MenuItemProtocol>: View {
     
     private func menuText() -> some View {
         Text(menu.text)
-            .foregroundColor(isSelected ? configuration.menuSelectedItemTextColor : configuration.unselectedTextColor)
+            .foregroundColor(isSelected ? configuration.selectedTextColor : configuration.unselectedTextColor)
             .font(isSelected ? configuration.selectedFont : configuration.unselectedFont)
     }
 }
@@ -243,12 +236,12 @@ struct NavigationMenu_Previews: PreviewProvider {
             NavigationMenu(selectedIndex: .constant(2),
                            menuItems: [
                             MenuItem(text: "Item 1",
-                                     imageSelected: Image(systemName: "star.fill"),
-                                     imageUnselected: Image(systemName: "star")),
+                                     selectedImage: Image(systemName: "star.fill"),
+                                     unselectedImage: Image(systemName: "star")),
                             MenuItem(text: "Item 2"),
                             MenuItem(text: "Item 3",
-                                     imageSelected: Image(systemName: "checkmark"),
-                                     imageUnselected: Image(systemName: "xmark"))
+                                     selectedImage: Image(systemName: "checkmark"),
+                                     unselectedImage: Image(systemName: "xmark"))
                            ], isScrollable: false)
                 .menuConfiguration(UnderlineMenuConfiguration())
         }.frame(maxWidth: .infinity)
@@ -263,10 +256,10 @@ enum ImagePosition {
 
 // MARK: - MenuConfiguration
 protocol MenuConfiguration {
-    var outerViewHeight: CGFloat { get }
+    var viewHeight: CGFloat { get }
     var itemPadding: CGFloat { get }
     var menuBackgroundColor: Color { get }
-    var menuSelectedItemTextColor: Color { get }
+    var selectedTextColor: Color { get }
     var unselectedTextColor: Color { get }
     var selectedFont: Font { get }
     var unselectedFont: Font { get }
@@ -274,15 +267,16 @@ protocol MenuConfiguration {
     var imagePadding: CGFloat { get }
     var margin: CGFloat { get }
     var unSelectedImageOpacity: CGFloat { get }
-    var imagePosition: ImagePosition{ get }
+    var imagePosition: ImagePosition { get }
+    var takeEntireAvailableSpace: Bool { get }
 }
 
 // MARK: - UnderlineMenuConfiguration
 struct UnderlineMenuConfiguration: MenuConfiguration {
-    var outerViewHeight: CGFloat = 48
+    var viewHeight: CGFloat = 48
     var itemPadding: CGFloat = 12
     var menuBackgroundColor: Color = .clear
-    var menuSelectedItemTextColor: Color = .black
+    var selectedTextColor: Color = .black
     var unselectedTextColor: Color = .blue
     var selectedFont: Font = .system(size: 16, weight: .bold)
     var unselectedFont: Font = .system(size: 16, weight: .regular)
@@ -294,30 +288,31 @@ struct UnderlineMenuConfiguration: MenuConfiguration {
     var margin: CGFloat = 5
     var unSelectedImageOpacity: CGFloat = 0.5
     var imagePosition: ImagePosition = .above
+    var takeEntireAvailableSpace: Bool = false
 }
 
 // MARK: - ChipMenuConfiguration
 struct ChipMenuConfiguration: MenuConfiguration {
-    var outerViewHeight: CGFloat = 48
+    var viewHeight: CGFloat = 48
     var innerViewHeight: CGFloat = 40
     var itemPadding: CGFloat = 12
     var menuBackgroundColor: Color = .clear
-    var selectedMenuItemBackgroundColor: Color = .clear
-    var unselectedMenuItemBackgroundColor: Color = .clear
-    var menuSelectedItemTextColor: Color = .black
+    var selectedItemBackgroundColor: Color = .clear
+    var unselectedItemBackgroundColor: Color = .clear
+    var selectedTextColor: Color = .black
     var unselectedTextColor: Color = .blue
-    var itemBorderWidth: CGFloat = 1
-    var itemCornerRadius: CGFloat = 5
+    var borderWidth: CGFloat = 1
+    var cornerRadius: CGFloat = 5
     var selectedBorderColor: Color = .clear
     var unselectedBorderColor: Color = .clear
-    var isMaxWidth: Bool = false
     var selectedFont: Font = .system(size: 16, weight: .bold)
     var unselectedFont: Font = .system(size: 16, weight: .regular)
     var imageWidth: CGFloat = 30
     var imagePadding: CGFloat = 10
-    var margin: CGFloat = 5
     var unSelectedImageOpacity: CGFloat = 0.5
     var imagePosition: ImagePosition = .inline
+    var margin: CGFloat = 5
+    var takeEntireAvailableSpace: Bool = false
 }
 
 // MARK: - Environment Keys

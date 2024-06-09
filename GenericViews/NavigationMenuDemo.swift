@@ -24,6 +24,8 @@ struct NavigationMenuDemo: View {
             UnderlinedMenuExample()
             Spacer().frame(height: 50)
             UnderlinedMenuWithInlineImage()
+            Spacer().frame(height: 50)
+            FillEntireSpaceExample()
             Spacer()
         }
     }
@@ -42,16 +44,18 @@ struct ChipMenuExample: View {
     var body: some View {
         NavigationMenu(selectedIndex: $selectedIndex,
                        menuItems: menuItems,
-                       isScrollable: true)
+                       isScrollable: true, actionHandler: { selectedIndex in
+            
+        })
         .menuConfiguration(ChipMenuConfiguration(
             innerViewHeight: 46,
             itemPadding: 12,
-            selectedMenuItemBackgroundColor: .white,
-            unselectedMenuItemBackgroundColor: Color(hex: 0xF8F8F8),
-            menuSelectedItemTextColor: Color(hex: 0xB8987D),
+            selectedItemBackgroundColor: .white,
+            unselectedItemBackgroundColor: Color(hex: 0xF8F8F8),
+            selectedTextColor: Color(hex: 0xB8987D),
             unselectedTextColor: Color(hex: 0x9B9B9B),
-            itemBorderWidth: 1,
-            itemCornerRadius: 10,
+            borderWidth: 1,
+            cornerRadius: 10,
             selectedBorderColor: Color(hex: 0xB8987D),
             selectedFont: .system(size: 12, weight: .bold),
             unselectedFont: .system(size: 12, weight: .regular),
@@ -66,11 +70,11 @@ struct ChipMenuExample: View {
 struct FloatingMenuCellExample: View {
     @State var selectedIndex: Int = 0
     var menuItems: [MenuItem] = [MenuItem(text: "Heart FILLED",
-                                          imageSelected: Image(systemName: "heart.fill"),
-                                          imageUnselected: Image(systemName: "heart.fill")),
+                                          selectedImage: Image(systemName: "heart.fill"),
+                                          unselectedImage: Image(systemName: "heart.fill")),
                                  MenuItem(text: "Location",
-                                          imageSelected: Image(systemName: "location"),
-                                          imageUnselected: Image(systemName: "location"))]
+                                          selectedImage: Image(systemName: "location"),
+                                          unselectedImage: Image(systemName: "location"))]
     var body: some View {
         HStack {
             Text("Inline with text")
@@ -80,14 +84,14 @@ struct FloatingMenuCellExample: View {
                            menuItems: menuItems,
                            isScrollable: false)
             .menuConfiguration(ChipMenuConfiguration(
-                outerViewHeight: 60,
+                viewHeight: 60,
                 innerViewHeight: 48,
                 itemPadding: 15,
                 menuBackgroundColor: .gray,
-                selectedMenuItemBackgroundColor: .white,
-                menuSelectedItemTextColor: .black,
+                selectedItemBackgroundColor: .white,
+                selectedTextColor: .black,
                 unselectedTextColor: Color(hex: 0xC8C8C8),
-                itemCornerRadius: 30,
+                cornerRadius: 30,
                 selectedFont: .system(size: 12, weight: .bold),
                 unselectedFont: .system(size: 12, weight: .regular),
                 imageWidth: 15,
@@ -106,17 +110,17 @@ struct FloatingMenuCellExample: View {
 struct ChipMenuWithImageExample: View {
     @State var selectedIndex: Int = 0
     var menuItems: [MenuItem] = [MenuItem(text: "1 Star",
-                                          imageSelected: Image(systemName: "star"),
-                                          imageUnselected: Image(systemName: "star")),
+                                          selectedImage: Image(systemName: "star"),
+                                          unselectedImage: Image(systemName: "star")),
                                  MenuItem(text: "2 Stars",
-                                          imageSelected: Image(systemName: "star"),
-                                          imageUnselected: Image(systemName: "star")),
+                                          selectedImage: Image(systemName: "star"),
+                                          unselectedImage: Image(systemName: "star")),
                                  MenuItem(text: "3 Stars",
-                                          imageSelected: Image(systemName: "star"),
-                                          imageUnselected: Image(systemName: "star")),
+                                          selectedImage: Image(systemName: "star"),
+                                          unselectedImage: Image(systemName: "star")),
                                  MenuItem(text: "4 Stars",
-                                          imageSelected: Image("starSelected"),
-                                          imageUnselected:Image(systemName: "star"))
+                                          selectedImage: Image("starSelected"),
+                                          unselectedImage:Image(systemName: "star"))
     ]
     var body: some View {
         NavigationMenu(selectedIndex: $selectedIndex,
@@ -125,11 +129,11 @@ struct ChipMenuWithImageExample: View {
         .menuConfiguration(ChipMenuConfiguration(
             innerViewHeight: 30,
             itemPadding: 6,
-            selectedMenuItemBackgroundColor: .gray,
-            unselectedMenuItemBackgroundColor: Color(hex: 0xF8F8F8),
-            menuSelectedItemTextColor: .white,
+            selectedItemBackgroundColor: .gray,
+            unselectedItemBackgroundColor: Color(hex: 0xF8F8F8),
+            selectedTextColor: .white,
             unselectedTextColor: Color(hex: 0x9B9B9B),
-            itemCornerRadius: 10,
+            cornerRadius: 10,
             selectedFont: .system(size: 12, weight: .bold),
             unselectedFont: .system(size: 12, weight: .regular),
             imageWidth: 15,
@@ -145,26 +149,26 @@ struct ChipMenuWithImageExample: View {
 struct UnderlinedMenuWithImage: View {
     @State var selectedIndex: Int = 0
     var menuItems: [MenuItem] = [MenuItem(text: "Bookmark",
-                                          imageSelected: Image(systemName: "bookmark"),
-                                          imageUnselected: Image(systemName: "bookmark")),
+                                          selectedImage: Image(systemName: "bookmark"),
+                                          unselectedImage: Image(systemName: "bookmark")),
                                  MenuItem(text: "trash",
-                                          imageSelected: Image(systemName: "trash"),
-                                          imageUnselected: Image(systemName: "trash")),
+                                          selectedImage: Image(systemName: "trash"),
+                                          unselectedImage: Image(systemName: "trash")),
                                  MenuItem(text: "Phone Numer",
-                                          imageSelected: Image(systemName: "phone"),
-                                          imageUnselected: Image(systemName: "phone")),
+                                          selectedImage: Image(systemName: "phone"),
+                                          unselectedImage: Image(systemName: "phone")),
                                  MenuItem(text: "Envelope",
-                                          imageSelected: Image(systemName: "envelope"),
-                                          imageUnselected: Image(systemName: "envelope")),
+                                          selectedImage: Image(systemName: "envelope"),
+                                          unselectedImage: Image(systemName: "envelope")),
                                  MenuItem(text: "Person",
-                                          imageSelected: Image(systemName: "person"),
-                                          imageUnselected: Image(systemName: "person")),
+                                          selectedImage: Image(systemName: "person"),
+                                          unselectedImage: Image(systemName: "person")),
                                  MenuItem(text: "Paper clip",
-                                          imageSelected: Image(systemName: "paperclip"),
-                                          imageUnselected: Image(systemName: "paperclip")),
+                                          selectedImage: Image(systemName: "paperclip"),
+                                          unselectedImage: Image(systemName: "paperclip")),
                                  MenuItem(text: "Bandage",
-                                          imageSelected: Image(systemName: "bandage"),
-                                          imageUnselected: Image(systemName: "bandage"))]
+                                          selectedImage: Image(systemName: "bandage"),
+                                          unselectedImage: Image(systemName: "bandage"))]
     
     var body: some View {
         
@@ -173,8 +177,8 @@ struct UnderlinedMenuWithImage: View {
                            menuItems: menuItems,
                            isScrollable: true)
             .menuConfiguration(UnderlineMenuConfiguration(
-                outerViewHeight: 90,
-                menuSelectedItemTextColor: Color(hex: 0x050A30),
+                viewHeight: 90,
+                selectedTextColor: Color(hex: 0x050A30),
                 unselectedTextColor: Color(hex: 0x050A30, alpha: 0.5),
                 selectedFont: .system(size: 12, weight: .bold),
                 unselectedFont: .system(size: 12, weight: .regular),
@@ -207,7 +211,7 @@ struct UnderlinedMenuExample: View {
                            menuItems: menuItems,
                            isScrollable: false)
             .menuConfiguration(UnderlineMenuConfiguration(
-                menuSelectedItemTextColor: Color(hex: 0x000000),
+                selectedTextColor: Color(hex: 0x000000),
                 unselectedTextColor: Color(hex: 0x989898),
                 selectedFont: .system(size: 12, weight: .bold),
                 unselectedFont: .system(size: 12, weight: .regular),
@@ -215,7 +219,6 @@ struct UnderlinedMenuExample: View {
                 underlineTopPadding: 10,
                 underlineHeight: 3,
                 margin: 10
-                
             ))
             Spacer()
         }
@@ -229,14 +232,14 @@ struct UnderlinedMenuExample: View {
 struct UnderlinedMenuWithInlineImage: View {
     @State var selectedIndex: Int = 0
     var menuItems: [MenuItem] = [MenuItem(text: "Heart",
-                                          imageSelected: Image(systemName: "heart.fill"),
-                                          imageUnselected: Image(systemName: "heart.fill")),
+                                          selectedImage: Image(systemName: "heart.fill"),
+                                          unselectedImage: Image(systemName: "heart.fill")),
                                  MenuItem(text: "Location",
-                                          imageSelected: Image(systemName: "location"),
-                                          imageUnselected: Image(systemName: "location")),
+                                          selectedImage: Image(systemName: "location"),
+                                          unselectedImage: Image(systemName: "location")),
                                  MenuItem(text: "Calender",
-                                          imageSelected: Image(systemName: "calendar"),
-                                          imageUnselected: Image(systemName: "calendar"))]
+                                          selectedImage: Image(systemName: "calendar"),
+                                          unselectedImage: Image(systemName: "calendar"))]
     var body: some View {
         HStack {
            
@@ -245,7 +248,7 @@ struct UnderlinedMenuWithInlineImage: View {
                            isScrollable: false)
             .menuConfiguration(UnderlineMenuConfiguration(
                 itemPadding: 5,
-                menuSelectedItemTextColor: Color(hex: 0x000000),
+                selectedTextColor: Color(hex: 0x000000),
                 unselectedTextColor: Color(hex: 0x989898),
                 selectedFont: .system(size: 12, weight: .bold),
                 unselectedFont: .system(size: 12, weight: .regular),
@@ -255,12 +258,46 @@ struct UnderlinedMenuWithInlineImage: View {
                 imageWidth: 15,
                 margin: 10,
                 imagePosition: .inline
-                
             ))
             Spacer()
         }
     }
 }
+
+// MARK: - UnderlinedMenuExample
+struct FillEntireSpaceExample: View {
+    @State var selectedIndex: Int = 0
+    var menuItems: [MenuItem] = [MenuItem(text: "Heart",
+                                          selectedImage: Image(systemName: "heart.fill"),
+                                          unselectedImage: Image(systemName: "heart.fill")),
+                                 MenuItem(text: "Location",
+                                          selectedImage: Image(systemName: "location"),
+                                          unselectedImage: Image(systemName: "location"))]
+    var body: some View {
+        HStack {
+           
+            NavigationMenu(selectedIndex: $selectedIndex,
+                           menuItems: menuItems,
+                           isScrollable: false)
+            .menuConfiguration(UnderlineMenuConfiguration(
+                itemPadding: 5,
+                selectedTextColor: Color(hex: 0x000000),
+                unselectedTextColor: Color(hex: 0x989898),
+                selectedFont: .system(size: 12, weight: .bold),
+                unselectedFont: .system(size: 12, weight: .regular),
+                underlineColor: .black,
+                underlineTopPadding: 10,
+                underlineHeight: 3,
+                imageWidth: 15,
+                margin: 10,
+                imagePosition: .inline,
+                takeEntireAvailableSpace: true
+            ))
+            Spacer()
+        }
+    }
+}
+
 
 // MARK: - Preview
 #Preview {
