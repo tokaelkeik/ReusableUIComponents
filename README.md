@@ -2,6 +2,8 @@
 
 A versatile and customizable navigation menu component for SwiftUI applications. This component supports various styles and configurations, making it suitable for a wide range of UI designs.
 
+![ezgif-3-f4bd42de18](https://github.com/tokaelkeik/ReusableUIComponents/assets/77276105/2fcda0dc-f07e-419f-b823-95fe3650c3af)
+
 ## Features
 
 - **Customizable Menu Items**: Define menu items with text and optional selected/unselected images.
@@ -120,15 +122,7 @@ By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch 
 
 By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space. The default value is `false`.
 
-
-## Components
-
-Descriptions of the various components that make up the navigation menu, such as `MenuItem`, `NavigationMenu`, `MenuView`, etc.
-
 ## Examples
 
-Code examples demonstrating how to use and customize the navigation menu.
+Checkout the demo app in the project.
 
-## License
-
-Details about the licensing of the customizable navigation menu component.
