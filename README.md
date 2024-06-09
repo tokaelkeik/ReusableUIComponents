@@ -38,16 +38,8 @@ All you need to use the Navigation Menu is to conform to `MenuItemProtocol` in y
 // MARK: - MenuItem
 struct MenuItem: MenuItemProtocol {
     var text: String
-    var imageSelected: Image?
-    var imageUnselected: Image?
-
-    var selectedImage: Image? {
-        return imageSelected
-    }
-    
-    var unselectedImage: Image? {
-        return imageUnselected
-    }
+    var selectedImage: Image?
+    var unselectedImage: Image?
 }
 
 struct ChipMenuExample: View {
@@ -72,9 +64,62 @@ struct ChipMenuExample: View {
     }
 }
 ```
+
 ## Customization
 
-Information on how to customize the navigation menu, including configuration options and styles.
+The navigation menu is highly customizable. You just need to provide the `.menuConfiguration` modifier and you can choose from either `ChipMenuConfiguration` or `UnderlineMenuConfiguration`. Each of them has several attributes you can change. Here they are with their default values:
+
+### UnderlineMenuConfiguration
+
+| Attribute                | Default Value                               |
+|--------------------------|---------------------------------------------|
+| `viewHeight`             | `CGFloat = 48`                              |
+| `itemPadding`            | `CGFloat = 12`                              |
+| `menuBackgroundColor`    | `Color = .clear`                            |
+| `selectedTextColor`      | `Color = .black`                            |
+| `unselectedTextColor`    | `Color = .blue`                             |
+| `selectedFont`           | `Font = .system(size: 16, weight: .bold)`   |
+| `unselectedFont`         | `Font = .system(size: 16, weight: .regular)`|
+| `underlineColor`         | `Color = .black`                            |
+| `underlineTopPadding`    | `CGFloat = 20`                              |
+| `underlineHeight`        | `CGFloat = 3`                               |
+| `imageWidth`             | `CGFloat = 30`                              |
+| `imagePadding`           | `CGFloat = 10`                              |
+| `margin`                 | `CGFloat = 5`                               |
+| `unSelectedImageOpacity` | `CGFloat = 0.5`                             |
+| `imagePosition`          | `ImagePosition = .above`                    |
+| `takeEntireAvailableSpace` | `Bool = false`                           |
+
+By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space. The default value is `false`.
+
+### ChipMenuConfiguration
+
+| Attribute                       | Default Value                               |
+|---------------------------------|---------------------------------------------|
+| `viewHeight`                    | `CGFloat = 48`                              |
+| `innerViewHeight`               | `CGFloat = 40`                              |
+| `itemPadding`                   | `CGFloat = 12`                              |
+| `menuBackgroundColor`           | `Color = .clear`                            |
+| `selectedItemBackgroundColor`   | `Color = .clear`                            |
+| `unselectedItemBackgroundColor` | `Color = .clear`                            |
+| `selectedTextColor`             | `Color = .black`                            |
+| `unselectedTextColor`           | `Color = .blue`                             |
+| `borderWidth`                   | `CGFloat = 1`                               |
+| `cornerRadius`                  | `CGFloat = 5`                               |
+| `selectedBorderColor`           | `Color = .clear`                            |
+| `unselectedBorderColor`         | `Color = .clear`                            |
+| `isMaxWidth`                    | `Bool = false`                              |
+| `selectedFont`                  | `Font = .system(size: 16, weight: .bold)`   |
+| `unselectedFont`                | `Font = .system(size: 16, weight: .regular)`|
+| `imageWidth`                    | `CGFloat = 30`                              |
+| `imagePadding`                  | `CGFloat = 10` (added to bottom if position is `.above` and to trailing if `.inline`) |
+| `unSelectedImageOpacity`        | `CGFloat = 0.5`                             |
+| `imagePosition`                 | `ImagePosition = .inline`                   |
+| `margin`                        | `CGFloat = 5`                               |
+| `takeEntireAvailableSpace`      | `Bool = false`                              |
+
+By setting `takeEntireAvailableSpace` to `true`, you can make your menu stretch to take the whole available space. The default value is `false`.
+
 
 ## Components
 
