@@ -119,7 +119,7 @@ struct ChipMenuWithImageExample: View {
                                           selectedImage: Image(systemName: "star"),
                                           unselectedImage: Image(systemName: "star")),
                                  MenuItem(text: "4 Stars",
-                                          selectedImage: Image("starSelected"),
+                                          selectedImage: Image("star"),
                                           unselectedImage:Image(systemName: "star"))
     ]
     var body: some View {
