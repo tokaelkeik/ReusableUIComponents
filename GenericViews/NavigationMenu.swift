@@ -221,7 +221,7 @@ struct MenuItemContentView<Item: MenuItemProtocol>: View {
             image
                 .resizable()
                 .scaledToFit()
-                .frame(width: configuration.imageWidth)
+                .frame(width: configuration.imageWidth, height: configuration.imageWidth)
                 .padding(.trailing, configuration.imagePosition == .inline ?
                          configuration.imagePadding : 0)
                 .padding(.bottom, configuration.imagePosition == .above ? configuration.imagePadding : 0)
@@ -335,16 +335,5 @@ extension EnvironmentValues {
 extension View {
     func menuConfiguration(_ configuration: MenuConfiguration) -> some View {
         environment(\.menuConfiguration, configuration)
-    }
-}
-
-// MARK: - Add conditional modifiers
-extension View {
-    func `if`<Content: View>(_ conditional: Bool, content: (Self) -> Content) -> some View {
-        if conditional {
-            return AnyView(content(self))
-        } else {
-            return AnyView(self)
-        }
     }
 }
