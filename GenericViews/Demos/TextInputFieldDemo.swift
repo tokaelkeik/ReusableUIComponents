@@ -30,10 +30,15 @@ struct BeautisryTextField: View {
                     general: Constants.generalTextConfiguration,
                     errorMessageConfiguration: Constants.errorMessageConfiguration,
                     titleConfiguration: Constants.titleConfiguration,
-                    addClearButton: true
+                    leftButtonConfiguration: LeftButtonConfiguration(
+                        addButton: true,
+                        action: {
+                            firstName = ""
+                        }
+                    )
                 ))
             .onValidate(validationHandler: ValidationManager.validateTextLength)
-            
+
             Spacer().frame(height: 10)
             
             TextInputField(title: "Password",
@@ -53,7 +58,7 @@ struct BeautisryTextField: View {
             Spacer()
         }
         .padding(.horizontal, 20)
-       
+        
         
     }
 }
@@ -66,6 +71,8 @@ struct Constants {
         font: .system(size: 16),
         cornerRadius: 8,
         borderColor: .gray,
+        errorBorderColor: .red,
+        successBorderColor: .green,
         borderWidth: 1,
         padding: EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14)
     )

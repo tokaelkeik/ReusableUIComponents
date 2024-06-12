@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 // MARK: - TextInputField
 struct TextInputField: View {
     @Binding var text: String
@@ -22,7 +21,7 @@ struct TextInputField: View {
         }
     }
     @State private var validationMessage: String = ""
-    
+    @State private var borderColor: Color = .gray
  
     @Environment(\.textInputFieldConfiguration) var configuration: TextInputFieldConfiguration
     @Environment(\.validationHandler) var validationHandler
@@ -50,7 +49,8 @@ struct TextInputField: View {
             if isSecure {
                 SecureTextInputField(text: $text,
                                      placeholderText: placeholderText,
-                                     configuration: configuration)
+                                     configuration: configuration,
+                                     borderColor: $borderColor)
                 .overlay(clearButton)
                 .onChange(of: text) { value in
                     validate(value)
@@ -59,21 +59,19 @@ struct TextInputField: View {
             } else {
                 RegularTextInputField(text: $text,
                                       placeholderText: placeholderText,
-                                      configuration: configuration)
+                                      configuration: configuration,
+                                      borderColor: $borderColor)
                 .overlay(clearButton)
                 .onChange(of: text) { value in
                     validate(value)
                 }
             }
             
-            if !isValid {
-                Text(validationMessage)
-                    .font(configuration.errorMessageConfiguration.font)
-                    .foregroundColor(configuration.errorMessageConfiguration.color)
-                    .padding(.leading, configuration.errorMessageConfiguration.leadingPadding)
-                    .padding(.top, configuration.errorMessageConfiguration.topPadding)
-                
-            }
+            Text(isValid ? "" : validationMessage)
+                .font(configuration.errorMessageConfiguration.font)
+                .foregroundColor(configuration.errorMessageConfiguration.color)
+                .padding(.leading, configuration.errorMessageConfiguration.leadingPadding)
+                .padding(.top, configuration.errorMessageConfiguration.topPadding)
         }
     }
     
@@ -87,21 +85,23 @@ struct TextInputField: View {
             
             if case .failure(let error) = validationResult {
                 isValid = false
+                self.borderColor = configuration.general.errorBorderColor
                 self.validationMessage = "\(error.localizedDescription)"
             }
             else if case .success(let isValid) = validationResult {
                 self.isValid = isValid
                 self.validationMessage = ""
+                self.borderColor = configuration.general.successBorderColor
             }
         }
     }
     
     var clearButton: some View {
         HStack {
-            if configuration.addClearButton {
+            if configuration.leftButtonConfiguration.addButton {
                 Spacer()
-                Button(action: { text = "" }) {
-                    Image(systemName: "multiply.circle.fill")
+                Button(action: { configuration.leftButtonConfiguration.action?() }) {
+                    configuration.leftButtonConfiguration.image
                         .foregroundColor(Color(UIColor.systemGray))
                         .padding(.trailing, 10)
                 }
@@ -113,7 +113,7 @@ struct TextInputField: View {
     }
     
     var clearButtonPadding: CGFloat {
-        !configuration.addClearButton ? 25 : 0
+        !configuration.leftButtonConfiguration.addButton ? configuration.leftButtonConfiguration.trailingPadding : 0
     }
 }
 
@@ -122,7 +122,8 @@ struct SecureTextInputField: View {
     @Binding var text: String
     var placeholderText: String
     var configuration: TextInputFieldConfiguration
-
+    @Binding var borderColor: Color
+    
     var body: some View {
         SecureField(placeholderText, text: $text)
             .padding(configuration.general.padding)
@@ -136,7 +137,7 @@ struct SecureTextInputField: View {
                     y: configuration.general.shadowOffset.height)
             .overlay(
                 RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
-                    .stroke(configuration.general.borderColor, lineWidth: configuration.general.borderWidth)
+                    .stroke(borderColor, lineWidth: configuration.general.borderWidth)
             )
             .autocapitalization(configuration.general.autocapitalization)
             .keyboardType(configuration.keyboardType)
@@ -152,7 +153,8 @@ struct RegularTextInputField: View {
     @Binding var text: String
     var placeholderText: String
     var configuration: TextInputFieldConfiguration
-
+    @Binding var borderColor: Color
+    
     var body: some View {
         TextField(placeholderText, text: $text)
             .padding(configuration.general.padding)
@@ -166,7 +168,8 @@ struct RegularTextInputField: View {
                     y: configuration.general.shadowOffset.height)
             .overlay(
                 RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
-                    .stroke(configuration.general.borderColor, lineWidth: configuration.general.borderWidth)
+                    .stroke(borderColor,
+                            lineWidth: configuration.general.borderWidth)
             )
             .autocapitalization(configuration.general.autocapitalization)
             .keyboardType(configuration.keyboardType)
@@ -184,6 +187,8 @@ struct GeneralTextInputFieldConfiguration {
     var font: Font = .system(size: 16)
     var cornerRadius: CGFloat = 8
     var borderColor: Color = .blue
+    var errorBorderColor: Color = .red
+    var successBorderColor: Color = .gray
     var borderWidth: CGFloat = 1
     var padding: EdgeInsets = EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
     var shadowColor: Color = .clear
@@ -207,14 +212,23 @@ struct InputFieldTitleConfiguration {
     var titleBottomPadding: CGFloat = 0
 }
 
+struct LeftButtonConfiguration {
+    var addButton: Bool = false
+    var image: Image = Image(systemName: "multiply.circle.fill")
+    var trailingPadding : CGFloat = 10
+    var action: (() -> Void)? = nil
+}
+
 // MARK: - TextInputFieldConfiguration
 struct TextInputFieldConfiguration {
     var general: GeneralTextInputFieldConfiguration = GeneralTextInputFieldConfiguration()
     var errorMessageConfiguration: ErrorMessageConfiguration = ErrorMessageConfiguration()
     var titleConfiguration: InputFieldTitleConfiguration = InputFieldTitleConfiguration()
+    var leftButtonConfiguration: LeftButtonConfiguration = LeftButtonConfiguration()
     var keyboardType: UIKeyboardType = .default
     var submitLabel: SubmitLabel = .next
-    var addClearButton: Bool = false
+   
+    
     var onFocus: (() -> Void)? = nil
     var onBlur: (() -> Void)? = nil
 }
