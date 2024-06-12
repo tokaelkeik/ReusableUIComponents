@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		14261A1B2C161823006B12B2 /* TextInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14261A1A2C161823006B12B2 /* TextInputField.swift */; };
+		14261A1E2C199D30006B12B2 /* TextInputFieldDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14261A1D2C199D30006B12B2 /* TextInputFieldDemo.swift */; };
 		14DAB7F82C11C1C10043219D /* GenericViewsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAB7F72C11C1C10043219D /* GenericViewsApp.swift */; };
 		14DAB7FA2C11C1C10043219D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DAB7F92C11C1C10043219D /* ContentView.swift */; };
 		14DAB7FC2C11C1C30043219D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14DAB7FB2C11C1C30043219D /* Assets.xcassets */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		14261A1A2C161823006B12B2 /* TextInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputField.swift; sourceTree = "<group>"; };
+		14261A1D2C199D30006B12B2 /* TextInputFieldDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputFieldDemo.swift; sourceTree = "<group>"; };
 		14DAB7F42C11C1C10043219D /* GenericViews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GenericViews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14DAB7F72C11C1C10043219D /* GenericViewsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericViewsApp.swift; sourceTree = "<group>"; };
 		14DAB7F92C11C1C10043219D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -36,6 +40,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14261A1C2C199D16006B12B2 /* Demos */ = {
+			isa = PBXGroup;
+			children = (
+				14DAB8072C11C1F20043219D /* NavigationMenuDemo.swift */,
+				14261A1D2C199D30006B12B2 /* TextInputFieldDemo.swift */,
+			);
+			path = Demos;
+			sourceTree = "<group>";
+		};
 		14DAB7EB2C11C1C00043219D = {
 			isa = PBXGroup;
 			children = (
@@ -55,12 +68,13 @@
 		14DAB7F62C11C1C10043219D /* GenericViews */ = {
 			isa = PBXGroup;
 			children = (
+				14261A1C2C199D16006B12B2 /* Demos */,
 				14DAB7F72C11C1C10043219D /* GenericViewsApp.swift */,
 				14DAB7F92C11C1C10043219D /* ContentView.swift */,
 				14DAB7FB2C11C1C30043219D /* Assets.xcassets */,
 				14DAB7FD2C11C1C30043219D /* Preview Content */,
 				14DAB8052C11C1DF0043219D /* NavigationMenu.swift */,
-				14DAB8072C11C1F20043219D /* NavigationMenuDemo.swift */,
+				14261A1A2C161823006B12B2 /* TextInputField.swift */,
 			);
 			path = GenericViews;
 			sourceTree = "<group>";
@@ -144,7 +158,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				14DAB7FA2C11C1C10043219D /* ContentView.swift in Sources */,
+				14261A1E2C199D30006B12B2 /* TextInputFieldDemo.swift in Sources */,
 				14DAB8082C11C1F20043219D /* NavigationMenuDemo.swift in Sources */,
+				14261A1B2C161823006B12B2 /* TextInputField.swift in Sources */,
 				14DAB8062C11C1DF0043219D /* NavigationMenu.swift in Sources */,
 				14DAB7F82C11C1C10043219D /* GenericViewsApp.swift in Sources */,
 			);

@@ -188,7 +188,7 @@ struct ChipMenuItemView<Item: MenuItemProtocol>: View {
 struct MenuItemContentView<Item: MenuItemProtocol>: View {
     var menu: Item
     var isSelected: Bool
-    var configuration: any MenuConfiguration // Use a generic configuration
+    var configuration: any MenuConfiguration 
     
     var body: some View {
         Group {
