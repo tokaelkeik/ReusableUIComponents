@@ -51,7 +51,6 @@ struct TextInputField: View {
                                      placeholderText: placeholderText,
                                      configuration: configuration,
                                      borderColor: $borderColor)
-                .overlay(clearButton)
                 .onChange(of: text) { value in
                     validate(value)
                 }
@@ -61,7 +60,7 @@ struct TextInputField: View {
                                       placeholderText: placeholderText,
                                       configuration: configuration,
                                       borderColor: $borderColor)
-                .overlay(clearButton)
+                
                 .onChange(of: text) { value in
                     validate(value)
                 }
@@ -95,6 +94,178 @@ struct TextInputField: View {
             }
         }
     }
+}
+
+// MARK: - SecureTextInputField
+struct SecureTextInputField: View {
+    @Binding var text: String
+    var placeholderText: String
+    var configuration: TextInputFieldConfiguration
+    @Binding var borderColor: Color
+    
+    @State private var isPasswordVisible: Bool = false
+    
+    var body: some View {
+        
+        if isPasswordVisible {
+            
+            VStack(spacing: 0) {
+                ZStack {
+                    TextField(placeholderText, text: $text)
+                        .padding(configuration.general.padding)
+                        .background(configuration.general.backgroundColor)
+                        .foregroundColor(configuration.general.textColor)
+                        .font(configuration.general.font)
+                        .cornerRadius(configuration.general.cornerRadius)
+                        .shadow(color: configuration.general.shadowColor,
+                                radius: configuration.general.shadowRadius,
+                                x: configuration.general.shadowOffset.width,
+                                y: configuration.general.shadowOffset.height)
+                        .overlay(
+                            Group {
+                                if configuration.general.borderStyle == .border {
+                                    RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
+                                        .stroke(borderColor,
+                                                lineWidth: configuration.general.borderWidth)
+                                }
+                            }
+                        )
+                        .autocapitalization(configuration.general.autocapitalization)
+                        .keyboardType(configuration.keyboardType)
+                        .padding(.horizontal, configuration.general.horizontalPadding)
+                        .tint(configuration.general.cursorColor)
+                        .submitLabel(configuration.submitLabel)
+                    
+                    HStack {
+                        Spacer()
+                        showHidePasswordButton
+                            .padding(.trailing, clearButtonPadding)
+                    }
+                    
+                }.animation(.easeInOut, value: isPasswordVisible)
+                
+                if configuration.general.borderStyle == .underline {
+                    Rectangle()
+                        .frame(height: configuration.general.borderWidth)
+                        .foregroundColor(borderColor)
+                }
+                
+            }
+            
+            
+        } else {
+            VStack(spacing: 0) {
+                ZStack {
+                    SecureField(placeholderText, text: $text)
+                        .padding(configuration.general.padding)
+                        .background(configuration.general.backgroundColor)
+                        .foregroundColor(configuration.general.textColor)
+                        .font(configuration.general.font)
+                        .cornerRadius(configuration.general.cornerRadius)
+                        .shadow(color: configuration.general.shadowColor,
+                                radius: configuration.general.shadowRadius,
+                                x: configuration.general.shadowOffset.width,
+                                y: configuration.general.shadowOffset.height)
+                        .overlay(
+                            Group {
+                                if configuration.general.borderStyle == .border {
+                                    RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
+                                        .stroke(borderColor,
+                                                lineWidth: configuration.general.borderWidth)
+                                }
+                            }
+                        )
+                        .autocapitalization(configuration.general.autocapitalization)
+                        .keyboardType(configuration.keyboardType)
+                        .padding(.horizontal, configuration.general.horizontalPadding)
+                        .tint(configuration.general.cursorColor)
+                        .submitLabel(configuration.submitLabel)
+                    
+                    HStack {
+                        Spacer()
+                        showHidePasswordButton
+                            .padding(.trailing, clearButtonPadding)
+                    }
+                    
+                }
+                
+                if configuration.general.borderStyle == .underline {
+                    Rectangle()
+                        .frame(height: configuration.general.borderWidth)
+                        .foregroundColor(borderColor)
+                }
+            }
+        }
+    }
+    
+    var showHidePasswordButton: some View {
+        HStack {
+            if configuration.leftButtonConfiguration.addButton {
+                Spacer()
+                Button(action: { isPasswordVisible.toggle()
+                })
+                {
+                    (isPasswordVisible ?  configuration.leftButtonConfiguration.secureImageSelected :  configuration.leftButtonConfiguration.image)
+                   
+                        
+                }
+            }
+            else  {
+                EmptyView()
+            }
+        }
+    }
+    
+    var clearButtonPadding: CGFloat {
+        configuration.leftButtonConfiguration.addButton ? configuration.leftButtonConfiguration.trailingPadding : 0
+    }
+}
+
+
+// MARK: - RegularTextInputField
+struct RegularTextInputField: View {
+    @Binding var text: String
+    var placeholderText: String
+    var configuration: TextInputFieldConfiguration
+    @Binding var borderColor: Color
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            TextField(placeholderText, text: $text)
+                
+                .padding(configuration.general.padding)
+                .background(configuration.general.backgroundColor)
+                .foregroundColor(configuration.general.textColor)
+                .font(configuration.general.font)
+                .cornerRadius(configuration.general.cornerRadius)
+                .shadow(color: configuration.general.shadowColor,
+                        radius: configuration.general.shadowRadius,
+                        x: configuration.general.shadowOffset.width,
+                        y: configuration.general.shadowOffset.height)
+                .overlay(
+                    Group {
+                        if configuration.general.borderStyle == .border {
+                            RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
+                                .stroke(borderColor, lineWidth: configuration.general.borderWidth)
+                        }
+                    }
+                )
+                .autocapitalization(configuration.general.autocapitalization)
+                .keyboardType(configuration.keyboardType)
+                .padding(.horizontal, configuration.general.horizontalPadding)
+                .tint(configuration.general.cursorColor)
+                .submitLabel(configuration.submitLabel)
+            
+            if configuration.general.borderStyle == .underline {
+                Rectangle()
+                    .frame(height: configuration.general.borderWidth)
+                    .foregroundColor(borderColor)
+            }
+        }
+        .overlay(clearButton)
+        
+        
+    }
     
     var clearButton: some View {
         HStack {
@@ -117,70 +288,12 @@ struct TextInputField: View {
     }
 }
 
-// MARK: - SecureTextInputField
-struct SecureTextInputField: View {
-    @Binding var text: String
-    var placeholderText: String
-    var configuration: TextInputFieldConfiguration
-    @Binding var borderColor: Color
-    
-    var body: some View {
-        SecureField(placeholderText, text: $text)
-            .padding(configuration.general.padding)
-            .background(configuration.general.backgroundColor)
-            .foregroundColor(configuration.general.textColor)
-            .font(configuration.general.font)
-            .cornerRadius(configuration.general.cornerRadius)
-            .shadow(color: configuration.general.shadowColor,
-                    radius: configuration.general.shadowRadius,
-                    x: configuration.general.shadowOffset.width,
-                    y: configuration.general.shadowOffset.height)
-            .overlay(
-                RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
-                    .stroke(borderColor, lineWidth: configuration.general.borderWidth)
-            )
-            .autocapitalization(configuration.general.autocapitalization)
-            .keyboardType(configuration.keyboardType)
-            .padding(.horizontal, configuration.general.horizontalPadding)
-            .tint(configuration.general.cursorColor)
-            .submitLabel(configuration.submitLabel)
-    }
-}
-
-
-// MARK: - RegularTextInputField
-struct RegularTextInputField: View {
-    @Binding var text: String
-    var placeholderText: String
-    var configuration: TextInputFieldConfiguration
-    @Binding var borderColor: Color
-    
-    var body: some View {
-        TextField(placeholderText, text: $text)
-            .padding(configuration.general.padding)
-            .background(configuration.general.backgroundColor)
-            .foregroundColor(configuration.general.textColor)
-            .font(configuration.general.font)
-            .cornerRadius(configuration.general.cornerRadius)
-            .shadow(color: configuration.general.shadowColor,
-                    radius: configuration.general.shadowRadius,
-                    x: configuration.general.shadowOffset.width,
-                    y: configuration.general.shadowOffset.height)
-            .overlay(
-                RoundedRectangle(cornerRadius: configuration.general.cornerRadius)
-                    .stroke(borderColor,
-                            lineWidth: configuration.general.borderWidth)
-            )
-            .autocapitalization(configuration.general.autocapitalization)
-            .keyboardType(configuration.keyboardType)
-            .padding(.horizontal, configuration.general.horizontalPadding)
-            .tint(configuration.general.cursorColor)
-            .submitLabel(configuration.submitLabel)
-    }
-}
-
 // MARK: - GeneralTextInputFieldConfiguration
 struct GeneralTextInputFieldConfiguration {
+    enum BorderStyle {
+        case border, underline
+    }
+    var borderStyle: BorderStyle = .border
     var backgroundColor: Color = .gray.opacity(0.1)
     var textColor: Color = .black
     var cursorColor: Color = .black
@@ -215,6 +328,7 @@ struct InputFieldTitleConfiguration {
 struct LeftButtonConfiguration {
     var addButton: Bool = false
     var image: Image = Image(systemName: "multiply.circle.fill")
+    var secureImageSelected: Image = Image(systemName: "multiply.circle.fill")
     var trailingPadding : CGFloat = 10
     var action: (() -> Void)? = nil
 }

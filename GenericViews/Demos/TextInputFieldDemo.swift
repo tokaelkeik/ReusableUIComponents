@@ -10,14 +10,19 @@ import SwiftUI
 struct TextInputFieldDemo: View {
     var body: some View {
         VStack {
-            BeautisryTextField()
+            BorderedTextField()
         }
     }
 }
 
-struct BeautisryTextField: View {
+struct BorderedTextField: View {
+    enum FocusedField {
+        case firstName, lastName
+    }
+    
     @State private var firstName: String = ""
     @State private var lastName: String = ""
+    @FocusState private var focusedField: FocusedField?
     
     var body: some View {
         VStack{
@@ -32,11 +37,13 @@ struct BeautisryTextField: View {
                     titleConfiguration: Constants.titleConfiguration,
                     leftButtonConfiguration: LeftButtonConfiguration(
                         addButton: true,
+                        image: Image(systemName: "arrow.down.to.line.alt"),
                         action: {
                             firstName = ""
                         }
                     )
                 ))
+            .focused($focusedField, equals: .firstName)
             .onValidate(validationHandler: ValidationManager.validateTextLength)
 
             Spacer().frame(height: 10)
@@ -45,27 +52,48 @@ struct BeautisryTextField: View {
                            text: $lastName,
                            placeholderText: "Enter Your Password",
                            isSecure: true)
-            
             .textInputFieldConfiguration(
                 TextInputFieldConfiguration(
                     general: Constants.generalTextConfiguration,
                     errorMessageConfiguration: Constants.errorMessageConfiguration,
                     titleConfiguration: Constants.titleConfiguration,
+                    leftButtonConfiguration: LeftButtonConfiguration(
+                        addButton: true,
+                        
+                        image: Image(systemName: "eye"),
+                        secureImageSelected: Image(systemName: "eye.slash"),
+                        trailingPadding: 10,
+                        action: {
+                            firstName = ""
+                        }
+                    ),
                     submitLabel: .done
                 ))
+            .focused($focusedField, equals: .lastName)
             .onValidate(validationHandler: ValidationManager.validatePasswordLength)
             
             Spacer()
         }
         .padding(.horizontal, 20)
-        
-        
+        .onTapGesture {
+            print("test")
+            focusedField = nil
+        }
+        .onSubmit {
+            if focusedField == .firstName {
+                focusedField = .lastName
+            } else {
+                focusedField = nil
+            }
+        }
+       
     }
 }
 
 // MARK: - Constants
 struct Constants {
     static var generalTextConfiguration = GeneralTextInputFieldConfiguration(
+        borderStyle: .border,
         backgroundColor: .clear,
         textColor: .black,
         font: .system(size: 16),
@@ -73,7 +101,7 @@ struct Constants {
         borderColor: .gray,
         errorBorderColor: .red,
         successBorderColor: .green,
-        borderWidth: 1,
+        borderWidth: 2,
         padding: EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14)
     )
     
