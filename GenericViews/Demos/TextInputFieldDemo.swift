@@ -93,7 +93,7 @@ struct BorderedTextField: View {
 // MARK: - Constants
 struct Constants {
     static var generalTextConfiguration = GeneralTextInputFieldConfiguration(
-        borderStyle: .border,
+        borderStyle: .underline,
         backgroundColor: .clear,
         textColor: .black,
         font: .system(size: 16),
