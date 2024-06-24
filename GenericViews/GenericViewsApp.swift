@@ -11,7 +11,7 @@ import SwiftUI
 struct GenericViewsApp: App {
     var body: some Scene {
         WindowGroup {
-            TextInputFieldDemo()
+            OnboardingDemo()
         }
     }
 }

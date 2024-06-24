@@ -8,28 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var text = ""
+    @State private var selectedIndex: Int = 0
     
     var body: some View {
-        
         VStack {
-            TextInputField(title: "Enter Your Email",
-                           text:  $text,
-                           placeholderText: "Enter your name")
-                
-               
+            CustomPageControl(totalIndex: 5, selectedIndex: selectedIndex)
+                .pageControlConfiguration(PageControlConfiguration(
+                    selectedColor: .blue,
+                    unselectedColor: .gray,
+                    selectedSize: CGSize(width: 20, height: 10),
+                    unselectedSize: CGSize(width: 12, height: 12),
+                    cornerRadius: 10,
+                    animation: .spring()
+                ))
+            
+            Button("Next") {
+                selectedIndex = (selectedIndex + 1) % 5
+            }
         }
-        .padding()
-        Spacer()
     }
     
-    func validateTextLength(_ text: String) -> Result<Bool, ValidationError> {
-        if text.count >= 3 {
-            return .success(true)
-        } else {
-            return .failure(ValidationError(message: "Text must be at least 3 characters long"))
-        }
-    }
 }
 
 #Preview {

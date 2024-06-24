@@ -43,8 +43,8 @@ struct BorderedTextField: View {
                         }
                     )
                 ))
-            .focused($focusedField, equals: .firstName)
             .onValidate(validationHandler: ValidationManager.validateTextLength)
+            .focused($focusedField, equals: .firstName)
 
             Spacer().frame(height: 10)
             
